@@ -107,7 +107,7 @@ $connect->close();
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
                     <div class="text-center">
-                        <button type="submit" name="signIp" class="btn btn-primary mt-2" style="width:200px; height:50px;">Login</button>
+                        <button type="submit" name="submit" class="btn btn-primary mt-2" style="width:200px; height:50px;">Login</button>
                         </div>
                         </div>
                         <div class="card-footer text-center">

@@ -9,7 +9,7 @@ if (isset($_SESSION['sebagai'])) {
 
 include "../../config/config.php";
 
-$peminjaman = queryReadData("SELECT peminjaman.id, peminjaman.id_buku, buku.cover, buku.judul, peminjaman.nisn, member.nama, user.username, peminjaman.tgl_pinjam, peminjaman.tgl_kembali, peminjaman.status
+$peminjaman = queryReadData("SELECT peminjaman.id, peminjaman.id_buku, buku.cover, buku.judul, peminjaman.nisn, member.nama, user.username, peminjaman.tgl_pinjam, peminjaman.tgl_kembali, peminjaman.status, peminjaman.harga
 FROM peminjaman
 INNER JOIN buku ON peminjaman.id_buku = buku.id_buku
 INNER JOIN member ON peminjaman.nisn = member.nisn
@@ -196,7 +196,7 @@ if (isset($_POST["search"])) {
             <div class="collapse navbar-collapse" id="mynavbar">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <span class="navbar-brand text-center">Data Member</span>
+                        <span class="navbar-brand text-center">Data Peminjaman</span>
                     </li>
                     <li class="nav-item">
                         <i id="profile-icon" class="bi bi-person-circle text-light" data-bs-toggle="dropdown">
@@ -221,37 +221,37 @@ if (isset($_POST["search"])) {
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link" href="../index.php">
-                               <i class="fa fa-dashboard" style="margin: 5px;"></i>
+                                <i class="fa fa-dashboard" style="margin: 5px;"></i>
                                 Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../buku/data-buku.php">
-                            <i class="fa fa-book" style="margin: 5px;"></i>
+                                <i class="fa fa-book" style="margin: 5px;"></i>
                                 Data Buku
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../kategori/data-kategori.php">
-                            <i class="fa fa-list" style="margin: 5px;"></i>
+                                <i class="fa fa-list" style="margin: 5px;"></i>
                                 Data Kategori
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" href="data-peminjaman.php">
-                            <i class="fas fa-clipboard-list" style="margin: 5px;"></i>
+                                <i class="fas fa-clipboard-list" style="margin: 5px;"></i>
                                 Data Peminjaman
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../member/data-member.php">
-                            <i class="fa fa-address-card" style="margin: 5px;"></i>
+                                <i class="fa fa-address-card" style="margin: 5px;"></i>
                                 Data Member
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="../akun/pengguna.php">
-                            <i class="fas fa-user-tie" style="margin: 5px;"></i>
+                                <i class="fas fa-user-tie" style="margin: 5px;"></i>
                                 Data Pengguna
                             </a>
                         </li>
@@ -263,8 +263,8 @@ if (isset($_POST["search"])) {
             <main id="content" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <!-- Content goes here -->
                 <div class="card">
-                <div class="card-header bg-dark text-white">
-                        <h2 class="mt-2">Data Member</h2>
+                    <div class="card-header bg-dark text-white">
+                        <h2 class="mt-2">Data Peminjaman</h2>
                     </div>
                     <div class="card-body scrollable-card">
                         <form class="d-flex" action="" method="post">
@@ -280,18 +280,24 @@ if (isset($_POST["search"])) {
                                     <th>Cover</th>
                                     <th>Judul</th>
                                     <th>NISN</th>
-                                    <th>Nama Peminjam</th>
-                                    <th>Nama Petugas</th>
+                                    <th>Peminjam</th>
+                                    <th>Petugas</th>
+                                    <th>Biaya Pembayaran</th>
                                     <th>Tgl. Pinjam</th>
-                                    <th>Tgl. Akhir</th>
+                                    <th>Tgl. Selesai</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
                                 $no = 1; // Nomor urut dimulai dari 1
+                                $totalHarga = 0; // Inisialisasi total harga
+
                                 if (isset($peminjaman) && is_array($peminjaman) && count($peminjaman) > 0) {
                                     foreach ($peminjaman as $item) :
+                                        // Menghapus karakter non-angka seperti "Rp." dan "."
+                                        $hargaBuku = floatval(preg_replace("/[^0-9]/", "", $item['harga']));
+                                        $totalHarga += $hargaBuku; // Menambahkan harga buku ke total
                                 ?>
                                         <tr>
                                             <td><?= $no++; ?></td>
@@ -300,6 +306,7 @@ if (isset($_POST["search"])) {
                                             <td><?= $item['nisn']; ?></td>
                                             <td><?= $item['nama']; ?></td>
                                             <td><?= $item['username']; ?></td>
+                                            <td><?= $item['harga']; ?></td>
                                             <td><?= $item['tgl_pinjam']; ?></td>
                                             <td><?= $item['tgl_kembali']; ?></td>
                                             <td><?php
@@ -324,13 +331,17 @@ if (isset($_POST["search"])) {
                                 <?php endforeach;
                                 } else {
                                     echo '<tr><td colspan="10">Tidak ada data peminjaman.</td></tr>';
-                                } ?>
+                                }
+                                ?>
                                 <!-- Tambahkan baris data lainnya sesuai kebutuhan -->
                             </tbody>
                         </table>
                     </div>
+                    <div class="card-footer">
+                        <strong>Total Harga: </strong>
+                        Rp. <?= number_format($totalHarga, 0, ',', '.'); ?>
+                    </div>
                 </div>
-
             </main>
         </div>
     </div>

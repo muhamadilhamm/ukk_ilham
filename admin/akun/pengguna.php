@@ -289,6 +289,7 @@ if (isset($_POST["search"])) {
                                     <th style="width:50px;">#</th>
                                     <th>Nama</th>
                                     <th>Username</th>
+                                    <th>No. Telpon</th>
                                     <th>Sebagai</th>
                                     <th style="width:200px;">Aksi</th>
                                 </tr>
@@ -302,6 +303,7 @@ if (isset($_POST["search"])) {
                                         <td style="width:50px;"><?= $no++; ?></td>
                                         <td><?= $item['nama']; ?></td>
                                         <td><?= $item['username']; ?></td>
+                                        <td><?= $item['no_telp']; ?></td>
                                         <td><?= $item['sebagai']; ?></td>
                                         <td style="width:200px;">
                                             <?php
@@ -351,6 +353,10 @@ if (isset($_POST["search"])) {
                         <div class="mb-3">
                             <label for="exampleFormControlInput1" class="form-label">Password</label>
                             <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label">No Telpon</label>
+                            <input type="text" class="form-control" name="no_telp" id="no_telp" placeholder="+62" required>
                         </div>
                         <div class="input-group mb-3">
                             <label class="input-group-text" for="inputGroupSelect01">Sebagai</label>

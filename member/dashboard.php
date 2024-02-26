@@ -23,9 +23,15 @@ $nis = $_SESSION['nisn'];
 <html lang="en">
 <?php
 require "../config/config.php";
+// Pagination
+$itemsPerPage = 4;
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$offset = ($page - 1) * $itemsPerPage;
+// Query to get the total number of books
+$totalItems = queryReadData("SELECT COUNT(*) AS total FROM buku")[0]['total'];
+$totalPages = ceil($totalItems / $itemsPerPage);
 // query read semua buku
-$buku = queryReadData("SELECT * FROM buku order by id_buku DESC");
-//search buku
+$buku = queryReadData("SELECT * FROM buku order by id_buku DESC LIMIT $offset, $itemsPerPage");//search buku
 if (isset($_POST["search"])) {
   $buku = search($_POST["keyword"]);
 }
@@ -59,7 +65,7 @@ if (isset($_POST["search"])) {
             <a class="dropdown-item text-center mb-2" href="#">Siswa</a>
           </li>
           <li>
-            <a class="dropdown-item text-center p-2 bg-danger text-light rounded" href="logout.php">Logout <i class="fa-solid fa-right-to-bracket"></i></a>
+            <a class="dropdown-item text-center p-2 bg-danger text-light rounded" href="logout.php" onclick="return confirm('Apakah anda ingin keluar dari aplikasi ini?');">Logout <i class="fa-solid fa-right-to-bracket"></i></a>
           </li>
         </ul>
       </div>
@@ -192,8 +198,21 @@ if (isset($_POST["search"])) {
               </div>
             </div>
           <?php endforeach; ?>
+          </div>
+        <!-- Pagination links -->
+        <div class="d-flex justify-content-center mt-3">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                  <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+              <?php endfor; ?>
+            </ul>
+          </nav>
         </div>
       </div>
+    </div>
   </section>
 
 

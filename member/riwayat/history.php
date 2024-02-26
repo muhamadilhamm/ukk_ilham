@@ -104,7 +104,7 @@ if (isset($_POST["search"])) {
             <a class="dropdown-item text-center mb-2" href="#">Siswa</a>
           </li>
           <li>
-            <a class="dropdown-item text-center p-2 bg-danger text-light rounded" href="../logout.php">Logout <i class="fa-solid fa-right-to-bracket"></i></a>
+            <a class="dropdown-item text-center p-2 bg-danger text-light rounded" href="../logout.php" onclick="return confirm('Apakah anda ingin keluar dari aplikasi ini?');">Logout <i class="fa-solid fa-right-to-bracket"></i></a>
           </li>
         </ul>
       </div>
@@ -152,7 +152,7 @@ if (isset($_POST["search"])) {
               <th>Judul</th>
               <th>Nama Petugas</th>
               <th>Tgl. Pinjam</th>
-              <th>Tgl. Akhir</th>
+              <th>Tgl. Selesai</th>
             </tr>
           </thead>
           <tbody>

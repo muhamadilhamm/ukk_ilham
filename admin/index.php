@@ -13,7 +13,7 @@ $databuku = queryReadData("SELECT * FROM buku order by id_buku DESC");
 $datakategori = queryReadData("SELECT * FROM kategori_buku order by kategori ASC");
 $datasiswa = queryReadData("SELECT * FROM member order by nama, jurusan, kelas ASC");
 $datapengguna = queryReadData("SELECT * FROM user order by sebagai, nama ASC");
-$peminjaman = queryReadData("SELECT peminjaman.id, peminjaman.id_buku, buku.cover, buku.judul, peminjaman.nisn, member.nama, user.username, peminjaman.tgl_pinjam, peminjaman.tgl_kembali, peminjaman.status
+$peminjaman = queryReadData("SELECT peminjaman.id, peminjaman.id_buku, buku.cover, buku.judul, peminjaman.nisn, member.nama, user.username, peminjaman.tgl_pinjam, peminjaman.tgl_kembali, peminjaman.status, peminjaman.harga
 FROM peminjaman
 INNER JOIN buku ON peminjaman.id_buku = buku.id_buku
 INNER JOIN member ON peminjaman.nisn = member.nisn
@@ -332,10 +332,11 @@ order by peminjaman.status ASC");
                                             <th>Cover</th>
                                             <th>Judul</th>
                                             <th>NISN</th>
-                                            <th>Nama Peminjam</th>
-                                            <th>Nama Petugas</th>
+                                            <th>Peminjam</th>
+                                            <th>Petugas</th>
+                                            <th>Biaya Pembayaran</th>
                                             <th>Tgl. Pinjam</th>
-                                            <th>Tgl. Akhir</th>
+                                            <th>Tgl. Selesai</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
@@ -352,6 +353,7 @@ order by peminjaman.status ASC");
                                                     <td><?= $item['nisn']; ?></td>
                                                     <td><?= $item['nama']; ?></td>
                                                     <td><?= $item['username']; ?></td>
+                                                    <td><?= $item['harga']; ?></td>
                                                     <td><?= $item['tgl_pinjam']; ?></td>
                                                     <td><?= $item['tgl_kembali']; ?></td>
                                                     <td><?php

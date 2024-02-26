@@ -2,12 +2,20 @@
 <html lang="en">
 <?php
 require "config/config.php";
+// Pagination
+$itemsPerPage = 4;
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$offset = ($page - 1) * $itemsPerPage;
 // query read semua buku
-$buku = queryReadData("SELECT * FROM buku order by id_buku DESC");
+$buku = queryReadData("SELECT * FROM buku order by id_buku DESC LIMIT $offset, $itemsPerPage");
 //search buku
 if (isset($_POST["search"])) {
   $buku = search($_POST["keyword"]);
 }
+
+// Query to get the total number of books
+$totalItems = queryReadData("SELECT COUNT(*) AS total FROM buku")[0]['total'];
+$totalPages = ceil($totalItems / $itemsPerPage);
 ?>
 
 <head>
@@ -151,7 +159,20 @@ if (isset($_POST["search"])) {
             </div>
           <?php endforeach; ?>
         </div>
+        <!-- Pagination links -->
+        <div class="d-flex justify-content-center mt-3">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                  <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                </li>
+              <?php endfor; ?>
+            </ul>
+          </nav>
+        </div>
       </div>
+    </div>
   </section>
 
 

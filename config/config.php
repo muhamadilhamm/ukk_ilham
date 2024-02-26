@@ -146,12 +146,13 @@ function tambahadmin()
   $nama = $_POST['nama'];
   $username = $_POST['username'];
   $password = $_POST['password'];
+  $no_telp = $_POST['no_telp'];
   $sebagai = $_POST['sebagai'];
 
 
   //cek dulu jika ada foto produk jalankan coding ini
   if ($username != "") {
-    $query = "INSERT INTO user ( nama, username, password, sebagai) VALUES ( '$nama', '$username', '$password', '$sebagai')";
+    $query = "INSERT INTO user ( nama, username, password, no_telp, sebagai) VALUES ( '$nama', '$username', '$password', '$no_telp', '$sebagai')";
     $result = mysqli_query($connection, $query);
     // periska query apakah ada error
     if (!$result) {
@@ -209,7 +210,7 @@ function searchKategori($keyword)
 function searchPinjamAdmin($keyword)
 {
   // search Peminjaman Admin
-  $searchPinjam = "SELECT peminjaman.id, peminjaman.id_buku, buku.cover, buku.judul, peminjaman.nisn, member.nama, user.username, peminjaman.tgl_pinjam, peminjaman.tgl_kembali, peminjaman.status
+  $searchPinjam = "SELECT peminjaman.id, peminjaman.id_buku, buku.cover, buku.judul, peminjaman.nisn, member.nama, user.username, peminjaman.tgl_pinjam, peminjaman.tgl_kembali, peminjaman.status,peminjaman.harga
         FROM peminjaman
         INNER JOIN buku ON peminjaman.id_buku = buku.id_buku
         INNER JOIN member ON peminjaman.nisn = member.nisn
@@ -219,6 +220,7 @@ function searchPinjamAdmin($keyword)
             member.nama LIKE '%$keyword%' OR 
             user.username LIKE '%$keyword%' OR 
             buku.judul LIKE '%$keyword%' OR 
+            peminjaman.harga LIKE '%$keyword%' OR 
             peminjaman.tgl_pinjam LIKE '%$keyword%' OR 
             peminjaman.tgl_kembali LIKE '%$keyword%'
         ORDER BY peminjaman.id DESC";
@@ -237,6 +239,7 @@ function searchPinjamPetugas($keyword)
         member.nisn AS nisn, 
         member.nama AS nama, 
         user.username AS username,
+        peminjaman.harga AS harga,
         peminjaman.tgl_pinjam AS tgl_pinjam,
         peminjaman.tgl_kembali AS tgl_kembali,
         peminjaman.status AS status
@@ -249,6 +252,7 @@ function searchPinjamPetugas($keyword)
             member.nama LIKE '%$keyword%' OR 
             user.username LIKE '%$keyword%' OR 
             buku.judul LIKE '%$keyword%' OR 
+            peminjaman.harga LIKE '%$keyword%' OR 
             peminjaman.tgl_pinjam LIKE '%$keyword%' OR 
             peminjaman.tgl_kembali LIKE '%$keyword%')
         ORDER BY peminjaman.id DESC";
@@ -264,7 +268,7 @@ function searchPinjamMember($keyword)
     $statusString = implode(',', $statusArray);
 
     // Search Peminjaman Member
-    $searchPinjam = "SELECT peminjaman.id, peminjaman.id_buku, buku.cover, buku.judul, peminjaman.nisn, member.nama, user.username, peminjaman.tgl_pinjam, peminjaman.tgl_kembali, peminjaman.status
+    $searchPinjam = "SELECT peminjaman.id as peminjaman_id, peminjaman.id_buku, buku.cover, buku.judul, peminjaman.nisn, member.nama, user.username, peminjaman.tgl_pinjam, peminjaman.tgl_kembali, peminjaman.status, peminjaman.harga, user.no_telp as telp
         FROM peminjaman
         INNER JOIN buku ON peminjaman.id_buku = buku.id_buku
         INNER JOIN member ON peminjaman.nisn = member.nisn
@@ -274,6 +278,7 @@ function searchPinjamMember($keyword)
             member.nama LIKE '%$keyword%' OR 
             user.username LIKE '%$keyword%' OR 
             buku.judul LIKE '%$keyword%' OR 
+            peminjaman.harga LIKE '%$keyword%' OR 
             peminjaman.tgl_pinjam LIKE '%$keyword%' OR 
             peminjaman.tgl_kembali LIKE '%$keyword%'
         )
@@ -327,6 +332,18 @@ function searchAkun($keyword)
    sebagai LIKE '%$keyword%'
    ";
   return queryReadData($searchAkun);
+}
+
+// DELETE DATA Buku
+function batalPinjam($Id)
+{
+  global $connection;
+
+  $queryBatalPinjam = "DELETE FROM peminjaman WHERE id = '$Id'
+  ";
+  mysqli_query($connection, $queryBatalPinjam);
+
+  return mysqli_affected_rows($connection);
 }
 
 // DELETE DATA Buku
@@ -469,6 +486,7 @@ function updatePengguna($dataPengguna)
   $id = htmlspecialchars($dataPengguna["id"]);
   $nama = htmlspecialchars($dataPengguna["nama"]);
   $username = htmlspecialchars($dataPengguna["username"]);
+  $no_telp = htmlspecialchars($dataPengguna["no_telp"]);
   $password = htmlspecialchars($dataPengguna["password"]);
   $sebagai = $dataPengguna["sebagai"];
 
@@ -477,6 +495,7 @@ function updatePengguna($dataPengguna)
   nama = '$nama',
   username = '$username',
   password = '$password',
+  no_telp = '$no_telp',
   sebagai = '$sebagai'
   WHERE id = '$id'
   ";
@@ -499,11 +518,45 @@ function pinjamBuku($dataBuku)
   $idAdmin = $dataBuku["id_user"];
   $tglPinjam = $dataBuku["tgl_pinjam"];
   $tglKembali = $dataBuku["tgl_kembali"];
+  $harga = $dataBuku["harga"];
   $status = 0;
+  
+$queryCekPeminjaman = "SELECT * FROM peminjaman WHERE id_buku = '$idBuku' AND nisn = '$nisn' AND (status = '0' OR status = '1')";
+$resultCekPeminjaman = mysqli_query($connection, $queryCekPeminjaman);
 
-  $queryPinjam = "INSERT INTO peminjaman (id, id_buku, nisn, id_user, tgl_pinjam, tgl_kembali, status) VALUES(null, '$idBuku', $nisn, $idAdmin, '$tglPinjam', '$tglKembali', '$status')";
+  if(mysqli_num_rows($resultCekPeminjaman) > 0) {
+    echo "<script>alert('Anda sudah meminjam buku ini');</script>";
+    return 0; 
+  }
+
+  $queryPinjam = "INSERT INTO peminjaman (id, id_buku, nisn, id_user, tgl_pinjam, tgl_kembali,harga, status) VALUES(null, '$idBuku', $nisn, $idAdmin, '$tglPinjam', '$tglKembali','$harga','$status')";
   mysqli_query($connection, $queryPinjam);
   return mysqli_affected_rows($connection);
 }
 
+// Logika untuk mengubah status menjadi "Waktu habis" saat tanggal pengembalian telah lewat
+function pengembalian() {
+  global $connection;
+
+  // Ambil waktu saat ini
+  $waktuSekarang = date("Y-m-d");
+
+  // Query untuk mendapatkan peminjaman yang waktu pengembaliannya sudah berakhir
+  $queryPeminjamanBerakhir = "SELECT * FROM peminjaman WHERE tgl_kembali < '$waktuSekarang'";
+  $resultPeminjamanBerakhir = mysqli_query($connection, $queryPeminjamanBerakhir);
+
+  // Jika ada peminjaman yang sudah berakhir, simpan ke dalam tabel pengembalian dan hapus dari tabel peminjaman
+  while ($row = mysqli_fetch_assoc($resultPeminjamanBerakhir)) {
+      $idPeminjaman = $row['id'];
+
+      // Update status peminjaman menjadi "Waktu habis"
+      $queryUpdateStatus = "UPDATE peminjaman SET status = '3' WHERE id = '$idPeminjaman' AND status = '1'";
+      mysqli_query($connection, $queryUpdateStatus);
+
+      // Update status peminjaman menjadi "Waktu habis"
+      $queryUpdateStatus0 = "UPDATE peminjaman SET status = '2' WHERE id = '$idPeminjaman' AND status = '0'";
+      mysqli_query($connection, $queryUpdateStatus0);
+  }
+}
 // === FUNCTION KHUSUS MEMBER END ===
+?>

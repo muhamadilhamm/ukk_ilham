@@ -18,6 +18,7 @@ member.nama AS nama,
 user.username AS username,
 peminjaman.tgl_pinjam AS tgl_pinjam,
 peminjaman.tgl_kembali AS tgl_kembali,
+peminjaman.harga AS harga,
 peminjaman.status AS status
 FROM peminjaman
 INNER JOIN buku ON peminjaman.id_buku = buku.id_buku
@@ -260,7 +261,7 @@ if (mysqli_num_rows($sql) > 0) {
       <main id="content" class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
         <!-- Content goes here -->
         <div class="card">
-        <div class="card-header bg-dark text-white">
+          <div class="card-header bg-dark text-white">
             <h2 class="mt-2">Data Peminjaman
               <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" style="float:right;"><i class="fas fa-bell mr-2"></i> Notifikasi <b class="badge badge-light" style=""><?= number_format($a); ?></b></button>
             </h2>
@@ -279,10 +280,10 @@ if (mysqli_num_rows($sql) > 0) {
                   <th>Cover</th>
                   <th>Judul</th>
                   <th>NISN</th>
-                  <th>Nama Peminjam</th>
-                  <th>Nama Petugas</th>
+                  <th>Peminjam</th>
+                  <th>Biaya Pembayaran</th>
                   <th>Tgl. Pinjam</th>
-                  <th>Tgl. Akhir</th>
+                  <th>Tgl. Selesai</th>
                   <th>Status</th>
                   <th>Aksi</th>
                 </tr>
@@ -290,8 +291,13 @@ if (mysqli_num_rows($sql) > 0) {
               <tbody>
                 <?php
                 $no = 1; // Nomor urut dimulai dari 1
+                $totalHarga = 0; // Inisialisasi total harga
+
                 if (isset($peminjaman) && is_array($peminjaman) && count($peminjaman) > 0) {
                   foreach ($peminjaman as $item) :
+                    // Menghapus karakter non-angka seperti "Rp." dan "."
+                    $hargaBuku = floatval(preg_replace("/[^0-9]/", "", $item['harga']));
+                    $totalHarga += $hargaBuku; // Menambahkan harga buku ke total
                 ?>
                     <tr>
                       <td><?= $no++; ?></td>
@@ -299,7 +305,7 @@ if (mysqli_num_rows($sql) > 0) {
                       <td><?= $item['judul']; ?></td>
                       <td><?= $item['nisn']; ?></td>
                       <td><?= $item['nama']; ?></td>
-                      <td><?= $item['username']; ?></td>
+                      <td><?= $item['harga']; ?></td>
                       <td><?= $item['tgl_pinjam']; ?></td>
                       <td><?= $item['tgl_kembali']; ?></td>
                       <td><?php
@@ -321,7 +327,7 @@ if (mysqli_num_rows($sql) > 0) {
                         <span class="<?php echo $statusClass; ?>"><?php echo $statusText; ?></span>
                       </td>
                       <td>
-                        <a href="validate.php?id=<?= $item['peminjaman_id']; ?>" class="btn btn-warning" title="Cek"><i class="fa fa-tags"></i> Cek</a>
+                        <a href="validate.php?id=<?= $item['peminjaman_id']; ?>" class="btn btn-warning" style="width:80px;" title="Cek"><i class="fa fa-tags"></i> Cek</a>
                       </td>
                     </tr>
                 <?php endforeach;
@@ -332,8 +338,11 @@ if (mysqli_num_rows($sql) > 0) {
               </tbody>
             </table>
           </div>
+          <div class="card-footer">
+            <strong>Total Harga: </strong>
+            Rp. <?= number_format($totalHarga, 0, ',', '.'); ?>
+          </div>
         </div>
-
       </main>
     </div>
   </div>
@@ -348,7 +357,7 @@ if (mysqli_num_rows($sql) > 0) {
         </div>
         <div class="modal-body">
           <?php
-          
+
           $sekarang  = date("Y-m-d");
           $query  = mysqli_query($connection, "SELECT peminjaman.id AS peminjaman_id,
              peminjaman.tgl_kembali AS tgl_kembali,

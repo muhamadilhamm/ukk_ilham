@@ -286,6 +286,11 @@ if (isset($_POST["edit"])) {
                                     <input type="text" class="form-control" name="password" id="password" value="<?= $item['password']; ?>">
                                 </div>
 
+                                <div class="mb-3">
+                                    <label for="exampleFormControlInput1" class="form-label">No Telpon</label>
+                                    <input type="text" class="form-control" name="no_telp" id="no_telp" value="<?= $item['no_telp']; ?>">
+                                </div>
+
                                 <div class="input-group mb-3">
                                     <label class="input-group-text" for="inputGroupSelect01">Sebagai</label>
                                     <select class="form-select" id="sebagai" name="sebagai">

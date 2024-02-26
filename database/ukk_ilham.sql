@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 19 Feb 2024 pada 14.27
--- Versi server: 10.4.27-MariaDB
--- Versi PHP: 8.2.0
+-- Waktu pembuatan: 26 Feb 2024 pada 12.03
+-- Versi server: 10.4.21-MariaDB
+-- Versi PHP: 8.0.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -38,7 +38,7 @@ CREATE TABLE `buku` (
   `jml_halaman` int(11) NOT NULL,
   `deskripsi` varchar(250) NOT NULL,
   `isi_buku` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data untuk tabel `buku`
@@ -60,7 +60,7 @@ INSERT INTO `buku` (`cover`, `id_buku`, `judul`, `kategori`, `pengarang`, `pener
 
 CREATE TABLE `kategori_buku` (
   `kategori` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data untuk tabel `kategori_buku`
@@ -83,7 +83,7 @@ CREATE TABLE `member` (
   `kelas` varchar(50) NOT NULL,
   `jurusan` varchar(50) NOT NULL,
   `alamat` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data untuk tabel `member`
@@ -103,10 +103,11 @@ CREATE TABLE `peminjaman` (
   `id_buku` varchar(10) NOT NULL,
   `nisn` varchar(10) NOT NULL,
   `id_user` int(10) NOT NULL,
+  `harga` varchar(50) NOT NULL,
   `tgl_pinjam` date NOT NULL,
   `tgl_kembali` date NOT NULL,
   `status` int(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -119,15 +120,16 @@ CREATE TABLE `user` (
   `nama` varchar(50) NOT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(50) NOT NULL,
+  `no_telp` varchar(50) NOT NULL,
   `sebagai` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data untuk tabel `user`
 --
 
-INSERT INTO `user` (`id`, `nama`, `username`, `password`, `sebagai`) VALUES
-(1, 'iil', 'ilham', '123', 'admin');
+INSERT INTO `user` (`id`, `nama`, `username`, `password`, `no_telp`, `sebagai`) VALUES
+(1, 'iil', 'ilham', '123', '0833-7987-9982', 'admin');
 
 --
 -- Indexes for dumped tables
